@@ -1,6 +1,7 @@
 <script>
 import PageNavbar from '@/components/PageNavbar.vue';
 import ShoppingItem from "@/components/ShoppingItem.vue";
+
 export default {
   data() {
     return {
@@ -35,7 +36,7 @@ export default {
 
 
 <template>
-  <PageNavbar :cart="cart" />
+  <PageNavbar :cart="cart"/>
 
   <div v-if="isLoading" class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
@@ -44,9 +45,11 @@ export default {
   </div>
   <div v-else class="container">
     <div class="row" v-for="row in Math.ceil(productList.length / 3)" :key="row">
-      <div class="col" v-for="column in 3" :key="column">
-        <ShoppingItem v-if="(row - 1) * 3 + (column - 1) < productList.length" :item-info="productList[(row - 1) * 3 + (column - 1)]" />
-      </div>
+      <template v-for="column in 3" :key="column">
+        <div class="col d-flex justify-content-center" v-if="(row - 1) * 3 + (column - 1) < productList.length">
+          <ShoppingItem :item-info="productList[(row - 1) * 3 + (column - 1)]"/>
+        </div>
+      </template>
     </div>
   </div>
 </template>
