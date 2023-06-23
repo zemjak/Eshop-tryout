@@ -1,48 +1,44 @@
 <script>
-import {ref} from "vue";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
 
 export default {
   props: {
     itemInfo: {
       type: Object,
       required: true,
-    },
-    cart: {
-      type: Map,
-      required: true
-    },
-    wishlist: {
-      type: Set,
-      required: true
     }
   },
 
   setup(props) {
+    const store = useStore()
+
+    const cart = computed(() => store.state.cart)
+    const wishlist = computed(() => store.state.wishlist)
     const countInCart = () => {
-      return props.cart.get(props.itemInfo) === undefined ? 0 : props.cart.get(props.itemInfo)
+      return store.state.cart.has(props.itemInfo) ? store.state.cart.get(props.itemInfo) : 0
     }
     const handleClick = () => {
-      if (props.cart.has(props.itemInfo)) {
-        if (props.cart.get(props.itemInfo) < props.itemInfo.availablePieces) {
-          props.cart.set(props.itemInfo, props.cart.get(props.itemInfo) + 1)
+      if (store.state.cart.has(props.itemInfo)) {
+        if (store.state.cart.get(props.itemInfo) < props.itemInfo.availablePieces) {
+          store.state.cart.set(props.itemInfo, store.state.cart.get(props.itemInfo) + 1)
         }
       } else {
         if (props.itemInfo.availablePieces > 0) {
-          props.cart.set(props.itemInfo, 1)
+          store.state.cart.set(props.itemInfo, 1)
         }
       }
     }
     const canAddItemIntoCart = () => {
       return (props.itemInfo.availablePieces > 0) && (countInCart() < props.itemInfo.availablePieces)
     }
-    const isItemInWishlist = () => {
-      return props.wishlist.has(props.itemInfo)
-    }
+    const isItemInWishlist = (itemInfo) => computed(() => store.getters.isItemInWishlist(itemInfo))
+    const isInWishlist = isItemInWishlist(props.itemInfo)
     const addToWishlist = () => {
-      props.wishlist.add(props.itemInfo)
+      store.commit("addToWishlist", props.itemInfo)
     }
     const removeFromWishlist = () => {
-      props.wishlist.delete(props.itemInfo)
+      store.commit("removeFromWishlist", props.itemInfo)
     }
 
     return {
@@ -50,7 +46,7 @@ export default {
       handleClick,
       canAddItemIntoCart,
       countInCart,
-      isItemInWishlist,
+      isInWishlist,
       addToWishlist,
       removeFromWishlist
     };
@@ -72,8 +68,7 @@ export default {
       <h6 class="card-subtitle mb-2 text-muted pt-2">Pieces available: {{ itemInfo.availablePieces - countInCart() }}</h6>
       <a v-if="canAddItemIntoCart()" class="btn btn-primary" @click="handleClick">Add to cart</a>
       <a v-else class="btn btn-primary disabled">Add to cart</a>
-
-      <button v-if="isItemInWishlist()" @click="removeFromWishlist" type="button" class="btn btn-light">Remove 💖</button>
+      <button v-if="isInWishlist" @click="removeFromWishlist" type="button" class="btn btn-light">Remove 💖</button>
       <button v-else type="button" @click="addToWishlist" class="btn btn-light">Add to 🤍</button>
     </div>
   </div>

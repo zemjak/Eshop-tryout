@@ -1,27 +1,25 @@
 <script>
 
-export default {
-  props: {
-    cart: {
-      type: Object,
-      required: true,
-    }
-  },
+import {useStore} from "vuex";
 
-  setup(props, context) {
+export default {
+  setup() {
+    const store = useStore()
+
+    const cart = store.state.cart
     const cartSize = () => {
       let sum = 0
-      props.cart.forEach((value, key) => {
+      cart.forEach((value, key) => {
         sum += value
       })
       return sum
     }
     const updateOrderBy = (orderType) => {
-      context.emit("updateOrder", orderType)
+      store.commit("setOrderBy", orderType)
     }
 
     return {
-      cart: props.cart,
+      cart,
       cartSize,
       updateOrderBy
     };

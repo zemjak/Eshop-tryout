@@ -7,10 +7,7 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home,
-        meta: {
-            sprava: "Hello from router"
-        }
+        component: Home
     },
     {
         path: '/wishlist',

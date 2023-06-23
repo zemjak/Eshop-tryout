@@ -1,7 +1,8 @@
 <script>
 import PageNavbar from "@/components/PageNavbar.vue";
 import ShoppingItem from "@/components/ShoppingItem.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted} from "vue";
+import {useStore} from "vuex";
 
 export default {
   components: {
@@ -9,44 +10,20 @@ export default {
     PageNavbar
   },
 
-  setup(props) {
-    const apiUrl = "https://9gn9bc16qc.execute-api.eu-central-1.amazonaws.com/beta"
+  setup() {
+    const store = useStore()
 
-    const isLoading = ref(true)
-    const productList = ref([])
-    const orderBy = ref("Name")
-    const cart = ref(new Map())
-    const wishlist = ref(new Set())
-
+    const isLoading = computed(() => store.state.isLoading)
+    const productList = computed(() => store.state.productList)
+    const orderBy = computed(() => store.state.orderBy)
+    const cart = computed(() => store.state.cart)
+    const wishlist = computed(() => store.state.wishlist)
     const setOrderBy = (orderType) => {
-      orderBy.value = orderType
-
-      if (orderBy.value === "Price") {
-        productList.value = productList.value.sort((a, b) => {
-          return a.price - b.price
-        })
-      } else if (orderBy.value === "Sale") {
-        productList.value = productList.value.sort((a, b) => {
-          return b.discount - a.discount
-        })
-      } else {
-        productList.value = productList.value.sort((a, b) => {
-          return a.name.localeCompare(b.name)
-        })
-      }
+      store.commit("setOrderBy", orderType)
     }
 
     onMounted(() => {
-      fetch(apiUrl + '/all') //{"body": JSON.stringify({"orderType": orderBy})})
-          .then(response => response.json())
-          .then(jsonData => {
-            productList.value = jsonData
-            isLoading.value = false
-          })
-          .catch(error => {
-            isLoading.value = false
-            console.error(error);
-          });
+      store.dispatch("fetchData")
     })
 
     return {
@@ -62,10 +39,6 @@ export default {
 </script>
 
 <template>
-  <PageNavbar :cart="cart" @updateOrder="setOrderBy"/>
-
-  <p>{{ $route.meta.sprava }}</p>
-
   <div v-if="isLoading" class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
       <span class="sr-only">Loading...</span>
@@ -76,7 +49,6 @@ export default {
       <template v-for="column in 3" :key="column">
         <div class="col d-flex justify-content-center" v-if="(row - 1) * 3 + (column - 1) < productList.length">
           <ShoppingItem :item-info="productList[(row - 1) * 3 + (column - 1)]"
-                        :cart="cart" :wishlist="wishlist"
                         :key="productList[(row - 1) * 3 + (column - 1)].guid"/>
         </div>
       </template>
