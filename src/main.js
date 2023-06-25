@@ -1,6 +1,6 @@
 import './assets/main.css'
 
-import {createApp, reactive, ref} from 'vue'
+import {computed, createApp, ref} from 'vue'
 import App from './App.vue'
 import router from "@/router";
 import {createStore} from "vuex";
@@ -9,11 +9,12 @@ const store = createStore({
     state() {
         return {
             apiUrl: "https://9gn9bc16qc.execute-api.eu-central-1.amazonaws.com/beta",
+            activePage: ref("Home"),
             isLoading: ref(true),
-            productList: ref([]),
-            cart: ref(new Map()),
+            productList: ref([]),  // List<ItemObject>
             orderBy: ref("Name"),
-            wishlist: ref(new Set())
+            cart: ref(new Map()),       // Map<String, Number> - map ItemObject guid to number of items
+            wishlist: ref(new Set())    // Set<String> - ItemObject guid
         };
     },
     mutations: {
@@ -33,7 +34,6 @@ const store = createStore({
                     return a.name.localeCompare(b.name)
                 })
             }
-            console.log(state.productList)
         },
         setLoading(state, loading) {
             state.isLoading = loading
@@ -42,10 +42,13 @@ const store = createStore({
             state.productList = list
         },
         addToWishlist(state, itemInfo) {
-            state.wishlist.add(itemInfo)
+            state.wishlist.add(itemInfo.guid)
         },
         removeFromWishlist(state, itemInfo) {
-            state.wishlist.delete(itemInfo)
+            state.wishlist.delete(itemInfo.guid)
+        },
+        setActivePage(state, activePage) {
+            state.activePage = activePage
         }
     },
     actions: {
@@ -65,7 +68,14 @@ const store = createStore({
     },
     getters: {
         isItemInWishlist: (state) => (itemInfo) => {
-            return state.wishlist.has(itemInfo)
+            return state.wishlist.has(itemInfo.guid)
+        },
+        filterItemsIntoWishList(state) {
+            return state.productList.filter(item => state.wishlist.has(item.guid))
+        },
+        filterItemsIntoCartList(state) {
+            const keys = new Set(state.cart.keys())
+            return state.productList.filter(item => keys.has(item.guid))
         }
     }
 });

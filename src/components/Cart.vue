@@ -1,42 +1,50 @@
 <script>
 
 import CartItem from "@/components/CartItem.vue";
+import {useStore} from "vuex";
+import {computed} from "vue";
 
 export default {
   components: {CartItem},
 
   setup() {
-    const itemInfo = {
-      "_id": "6489f4a1d0f3a4357aa56e69",
-      "index": 99,
-      "guid": "cabf1265-0169-4d06-8059-0335e1bfe390",
-      "price": 171.28,
-      "discount": 7,
-      "picture": "http://placehold.it/512x512",
-      "availablePieces": 8,
-      "rating": 3.2,
-      "name": "Product name 99",
-      "about": "Incididunt nulla incididunt exercitation irure magna excepteur cupidatat ut ea consectetur et excepteur culpa. Aliqua sint fugiat commodo proident culpa laboris aliquip. Qui laborum nulla incididunt sit laboris amet qui. Eu aliqua excepteur minim et nisi exercitation eu mollit anim. Sunt id sit id consectetur qui esse ullamco sint irure deserunt quis sint est ad. Lorem enim pariatur duis consequat nulla cillum duis cillum magna exercitation.\r\n",
-      "tags": [
-        "nulla",
-        "ad"
-      ]
-    }
+    const store = useStore()
+
+    const arrayFromMap = computed(() => store.getters.filterItemsIntoCartList)
+    const totalPrice = computed(() => {
+      let sum = 0
+      store.state.cart.forEach((amount, itemGuid) => {
+        sum += store.state.productList.find(item => item.guid === itemGuid).price * amount
+      })
+      return sum.toFixed(2)
+    })
+
+    const isCartEmpty = computed(() => store.state.cart.size === 0)
 
     return {
-      itemInfo
+      arrayFromMap,
+      totalPrice,
+      isCartEmpty
     }
   }
 }
 </script>
 
 <template>
-  <CartItem :amount="4" :item-info="itemInfo"/>
-
-  <div class="text-center m-8">
-    <h3>Total price: 23456</h3>
+  <div v-if="isCartEmpty" class="text-center">
+    <p>Your cart is empty...</p>
+    <p>Look for some interesting products at our home page!</p>
   </div>
-  <div class="text-center m-8">
-    <button class="btn btn-primary">Place order</button>
+  <div v-else >
+    <template v-for="shoppingItem in arrayFromMap">
+      <CartItem :item-info="shoppingItem"/>
+    </template>
+
+    <div class="text-center m-8">
+      <h3>Total price: {{ totalPrice }}</h3>
+    </div>
+    <div class="text-center m-8">
+      <button class="btn btn-primary">Place order</button>
+    </div>
   </div>
 </template>

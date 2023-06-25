@@ -1,7 +1,7 @@
 <script>
 
 import {useStore} from "vuex";
-import {computed, onMounted} from "vue";
+import {computed} from "vue";
 import ShoppingItem from "@/components/ShoppingItem.vue";
 
 export default {
@@ -9,8 +9,7 @@ export default {
   setup() {
     const store = useStore()
 
-    const wishlist = computed(() => store.state.wishlist)
-    const arrayFromSet = computed(() => Array.from(wishlist.value))
+    const arrayFromSet = computed(() => store.getters.filterItemsIntoWishList)
 
     return {
       arrayFromSet

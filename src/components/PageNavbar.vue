@@ -1,27 +1,32 @@
 <script>
 
 import {useStore} from "vuex";
+import {computed} from "vue";
 
 export default {
   setup() {
     const store = useStore()
 
-    const cart = store.state.cart
-    const cartSize = () => {
+    const activePage = computed(() => store.state.activePage)
+    const cartSize = computed(() => {
       let sum = 0
-      cart.forEach((value, key) => {
-        sum += value
+      store.state.cart.forEach((value, key) => {
+        sum += Number(value)
       })
       return sum
-    }
+    })
     const updateOrderBy = (orderType) => {
       store.commit("setOrderBy", orderType)
     }
+    const setActivePage = (activePage) => {
+      store.commit("setActivePage", activePage)
+    }
 
     return {
-      cart,
+      activePage,
       cartSize,
-      updateOrderBy
+      updateOrderBy,
+      setActivePage
     };
   }
 };
@@ -35,11 +40,17 @@ export default {
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <li class="nav-item active">
-          <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
+        <li v-if="activePage === 'Home'" class="nav-item active">
+          <router-link class="nav-link" to="/" @click="setActivePage('Home')">Home <span class="sr-only">(current)</span></router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/wishlist">Wishlist</router-link>
+        <li v-else class="nav-item">
+          <router-link class="nav-link" to="/" @click="setActivePage('Home')">Home <span class="sr-only">(current)</span></router-link>
+        </li>
+        <li v-if="activePage === 'Wishlist'" class="nav-item active">
+          <router-link class="nav-link" to="/wishlist" @click="setActivePage('Wishlist')">Wishlist</router-link>
+        </li>
+        <li v-else class="nav-item">
+          <router-link class="nav-link" to="/wishlist" @click="setActivePage('Wishlist')">Wishlist</router-link>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -52,8 +63,11 @@ export default {
           </div>
         </li>
         <li>
-          <button type="button" class="btn btn-primary">
-            <router-link class="nav-link" to="/cart">Cart <span class="badge badge-light">{{ cartSize() }}</span></router-link>
+          <button v-if="activePage === 'Cart'" type="button" class="btn btn-primary active">
+            <router-link class="nav-link" to="/cart" @click="setActivePage('Cart')">Cart <span class="badge badge-light">{{ cartSize }}</span></router-link>
+          </button>
+          <button v-else type="button" class="btn btn-primary">
+            <router-link class="nav-link" to="/cart" @click="setActivePage('Cart')">Cart <span class="badge badge-light">{{ cartSize }}</span></router-link>
           </button>
         </li>
       </ul>

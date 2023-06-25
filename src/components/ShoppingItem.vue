@@ -1,5 +1,5 @@
 <script>
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 
 export default {
@@ -16,16 +16,16 @@ export default {
     const cart = computed(() => store.state.cart)
     const wishlist = computed(() => store.state.wishlist)
     const countInCart = () => {
-      return store.state.cart.has(props.itemInfo) ? store.state.cart.get(props.itemInfo) : 0
+      return store.state.cart.has(props.itemInfo.guid) ? store.state.cart.get(props.itemInfo.guid) : 0
     }
-    const handleClick = () => {
-      if (store.state.cart.has(props.itemInfo)) {
-        if (store.state.cart.get(props.itemInfo) < props.itemInfo.availablePieces) {
-          store.state.cart.set(props.itemInfo, store.state.cart.get(props.itemInfo) + 1)
+    const handleClickAddToCart = () => {
+      if (store.state.cart.has(props.itemInfo.guid)) {
+        if (store.state.cart.get(props.itemInfo.guid) < props.itemInfo.availablePieces) {
+          store.state.cart.set(props.itemInfo.guid, store.state.cart.get(props.itemInfo.guid) + 1)
         }
       } else {
         if (props.itemInfo.availablePieces > 0) {
-          store.state.cart.set(props.itemInfo, 1)
+          store.state.cart.set(props.itemInfo.guid, 1)
         }
       }
     }
@@ -43,7 +43,7 @@ export default {
 
     return {
       itemInfo: props.itemInfo,
-      handleClick,
+      handleClick: handleClickAddToCart,
       canAddItemIntoCart,
       countInCart,
       isInWishlist,
