@@ -66,14 +66,16 @@ export default {
   <div class="card" style="width: 18rem;">
     <img :alt="itemInfo.picture" :src="itemInfo.picture" class="card-img-top" @click="goToRoute">
     <div class="card-body">
-      <h4 class="card-title">{{ itemInfo.name }}</h4>
-      <h5 class="card-title">{{ itemInfo.price }}€</h5>
-      <div class="progress">
+      <h4 class="card-title" @click="goToRoute">{{ itemInfo.name }}</h4>
+      <h5 class="card-title" @click="goToRoute">{{ itemInfo.price }}€</h5>
+      <div class="progress" @click="goToRoute">
         <div :style="{ width: ((itemInfo.rating - 1) / 5) * 100 + '%' }" class="progress-bar" role="progressbar"></div>
         <span>Rating: {{ itemInfo.rating }}</span>
       </div>
-      <h4 v-if="itemInfo.discount > 0" class="card-title text-danger">Discount {{ itemInfo.discount }}%</h4>
-      <h6 class="card-subtitle mb-2 text-muted pt-2">Pieces available: {{
+      <h4 v-if="itemInfo.discount > 0" class="card-title text-danger" @click="goToRoute">Discount {{
+          itemInfo.discount
+        }}%</h4>
+      <h6 class="card-subtitle mb-2 text-muted pt-2" @click="goToRoute">Pieces available: {{
           itemInfo.availablePieces - countInCart()
         }}</h6>
       <a v-if="canAddItemIntoCart()" class="btn btn-primary" @click="handleClick">Add to cart</a>

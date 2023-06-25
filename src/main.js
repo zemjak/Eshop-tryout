@@ -25,11 +25,9 @@ const store = createStore({
         initialiseStore(state) {
             if (localStorage.getItem('cart')) {
                 state.cart = new Map(JSON.parse(localStorage.getItem("cart")))
-                console.log(state.cart.value)
             }
             if (localStorage.getItem('wishlist')) {
                 state.wishlist = new Set(JSON.parse(localStorage.getItem('wishlist')))
-                console.log(state.wishlist.value)
             }
         },
         setOrderBy(state, orderType) {
