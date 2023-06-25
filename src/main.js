@@ -1,6 +1,6 @@
 import './assets/main.css'
 
-import {computed, createApp, ref} from 'vue'
+import {createApp, ref} from 'vue'
 import App from './App.vue'
 import router from "@/router";
 import {createStore} from "vuex";
@@ -18,6 +18,20 @@ const store = createStore({
         };
     },
     mutations: {
+        saveStoreIntoLocalStorage(state) {
+            localStorage.setItem('cart', JSON.stringify(Array.from(state.cart.entries())))
+            localStorage.setItem('wishlist', JSON.stringify(Array.from(state.wishlist)))
+        },
+        initialiseStore(state) {
+            if (localStorage.getItem('cart')) {
+                state.cart = new Map(JSON.parse(localStorage.getItem("cart")))
+                console.log(state.cart.value)
+            }
+            if (localStorage.getItem('wishlist')) {
+                state.wishlist = new Set(JSON.parse(localStorage.getItem('wishlist')))
+                console.log(state.wishlist.value)
+            }
+        },
         setOrderBy(state, orderType) {
             state.orderBy = orderType
 
@@ -49,6 +63,9 @@ const store = createStore({
         },
         setActivePage(state, activePage) {
             state.activePage = activePage
+        },
+        deleteCart(state) {
+            state.cart = ref(new Map())
         }
     },
     actions: {
@@ -80,4 +97,9 @@ const store = createStore({
     }
 });
 
-createApp(App).use(store).use(router).mount('#app')
+createApp({
+    extends: App,
+    beforeCreate() {
+        this.$store.commit("initialiseStore")
+    }
+}).use(store).use(router).mount('#app')

@@ -21,10 +21,17 @@ export default {
 
     const isCartEmpty = computed(() => store.state.cart.size === 0)
 
+    const placeOrder = () => {
+      store.commit("deleteCart")
+      alert("Your order has been sent successfully!")
+      store.commit("saveStoreIntoLocalStorage")
+    }
+
     return {
       arrayFromMap,
       totalPrice,
-      isCartEmpty
+      isCartEmpty,
+      placeOrder
     }
   }
 }
@@ -35,7 +42,7 @@ export default {
     <p>Your cart is empty...</p>
     <p>Look for some interesting products at our home page!</p>
   </div>
-  <div v-else >
+  <div v-else>
     <template v-for="shoppingItem in arrayFromMap">
       <CartItem :item-info="shoppingItem"/>
     </template>
@@ -44,7 +51,7 @@ export default {
       <h3>Total price: {{ totalPrice }}</h3>
     </div>
     <div class="text-center m-8">
-      <button class="btn btn-primary">Place order</button>
+      <button class="btn btn-primary" @click="placeOrder">Place order</button>
     </div>
   </div>
 </template>

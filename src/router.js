@@ -1,7 +1,8 @@
-import {createRouter, createWebHashHistory} from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import Wishlist from "@/components/Wishlist.vue";
 import Home from "@/components/Home.vue";
 import Cart from "@/components/Cart.vue";
+import ItemDetail from "@/components/ItemDetail.vue";
 
 const routes = [
     {
@@ -18,8 +19,13 @@ const routes = [
         path: '/cart',
         name: 'Cart',
         component: Cart
+    },
+    {
+        path: '/itemDetail/:guid',
+        name: 'ItemDetail',
+        component: ItemDetail
     }
 ]
 
-const router = createRouter({ history: createWebHashHistory(), routes })
+const router = createRouter({history: createWebHistory(), routes})
 export default router

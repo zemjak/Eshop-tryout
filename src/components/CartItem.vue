@@ -15,6 +15,7 @@ export default {
     const getAmount = computed(() => store.state.cart.get(props.itemInfo.guid))
     const removeFromCart = () => {
       store.state.cart.delete(props.itemInfo.guid)
+      store.commit("saveStoreIntoLocalStorage")
     }
     const handleAmountChange = (event) => {
       const inputValue = event.target.value
@@ -27,6 +28,7 @@ export default {
         // tell  user that u cant have less than 1 item in cart.. if u want to remove it click on button..
       }
       store.state.cart.set(props.itemInfo.guid, event.target.value)
+      store.commit("saveStoreIntoLocalStorage")
     }
 
     return {
@@ -45,7 +47,7 @@ export default {
     <div class="card-body">
       <h5 class="card-title">Unit price: {{ itemInfo.price }}</h5>
       <div class="form-outline">
-        <input type="number" id="typeNumber" class="form-control" :value="getAmount" @input="handleAmountChange"/>
+        <input id="typeNumber" :value="getAmount" class="form-control" type="number" @input="handleAmountChange"/>
         <label class="form-label" for="typeNumber">Amount in cart</label>
       </div>
       <a class="btn btn-primary" @click="removeFromCart">Remove from cart</a>

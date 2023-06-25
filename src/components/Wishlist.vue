@@ -24,11 +24,11 @@ export default {
     <p>Look for some interesting products at our home page!</p>
   </div>
   <div v-else class="container">
-    <div class="row pb-4" v-for="row in Math.ceil(arrayFromSet.length / 3)" :key="row">
+    <div v-for="row in Math.ceil(arrayFromSet.length / 3)" :key="row" class="row pb-4">
       <template v-for="column in 3" :key="column">
-        <div class="col d-flex justify-content-center" v-if="(row - 1) * 3 + (column - 1) < arrayFromSet.length">
-          <ShoppingItem :item-info="arrayFromSet[(row - 1) * 3 + (column - 1)]"
-                        :key="arrayFromSet[(row - 1) * 3 + (column - 1)].guid"/>
+        <div v-if="(row - 1) * 3 + (column - 1) < arrayFromSet.length" class="col d-flex justify-content-center">
+          <ShoppingItem :key="arrayFromSet[(row - 1) * 3 + (column - 1)].guid"
+                        :item-info="arrayFromSet[(row - 1) * 3 + (column - 1)]"/>
         </div>
       </template>
     </div>
